@@ -17,11 +17,11 @@
 volatile int pulseCount = 0;
 float flowRate = 0.0;
 float totalLiters = 0.0;
-float lastHistory = 0.0; // Variabel untuk menyimpan history terakhir
+float lastHistory = 0.0; 
 unsigned long lastUpdate = 0;
 unsigned long lastSaveTime = 0;
-const unsigned long flowInterval = 200; // Interval flow rate (ms)
-const unsigned long saveInterval = 10000; // Interval EEPROM save (ms)bool isMaxUsage = false;
+const unsigned long flowInterval = 200;
+const unsigned long saveInterval = 10000; 
 bool ledState = false;
 unsigned long blinkTime = 0;
 // Buffer untuk rata-rata flow rate
@@ -65,7 +65,7 @@ pulseCount++;
 void updateFlow() {
 unsigned long currentTime = millis();
 if (currentTime - lastUpdate >= flowInterval) {
-float elapsedTime = (currentTime - lastUpdate) / 1000.0; // Dalam detik
+float elapsedTime = (currentTime - lastUpdate) / 1000.0; //
 flowRate = (pulseCount / (CALIBRATION_FACTOR * 60)) /
 elapsedTime;
 lastUpdate = currentTime;
@@ -95,23 +95,21 @@ Blynk.virtualWrite(V1, totalLiters);
 // Cek jika total liter melebihi 7if (totalLiters > 7.0) {
 lcd.setCursor(0, 0);
 lcd.print("Pemakaian Maks");
-digitalWrite(LED_PIN, HIGH); // Nyalakan LED
-isMaxUsage = true; // Set status pemakaian maksimal
+digitalWrite(LED_PIN, HIGH);
+isMaxUsage = true; 
 } else {
-digitalWrite(LED_PIN, LOW); // Matikan LED
-isMaxUsage = false; // Set status pemakaian normal
-lcd.setCursor(0, 0); // Hapus pesan "Pemakaian Maks" ketika total
+digitalWrite(LED_PIN, LOW); 
+isMaxUsage = false; 
+lcd.setCursor(0, 0); 
 liter < 7
-lcd.print(" "); // Bersihkan layar
+lcd.print(" "); 
 }
-// Simpan total liter ke EEPROM setiap saveInterval
 if (currentTime - lastSaveTime >= saveInterval) {
 saveToEEPROM();
 lastSaveTime = currentTime;
 }
 }
 }
-// Fungsi mengatur kedipan LED
 void handleLED() {
 if (isMaxUsage) {
 unsigned long currentMillis = millis();
@@ -123,15 +121,14 @@ blinkTime = currentMillis;
 digitalWrite(LED_PIN, LOW);
 }
 }
-// Reset total liters pada waktu tertentu
 void resetTotalLitersAtTime() {
 timeClient.update();
 int currentHour = timeClient.getHours();
 int currentMinute = timeClient.getMinutes();
 static bool historySaved = false;
 if (currentHour == 3 && currentMinute == 34 && !historySaved) {
-lastHistory = totalLiters; // Simpan total liters ke history
-Blynk.virtualWrite(V2, lastHistory); // Kirim history ke Blynk
+lastHistory = totalLiters; 
+Blynk.virtualWrite(V2, lastHistory); 
 totalLiters = 0.0;
 Serial.println("Total liters has been reset to 0.");
 Blynk.virtualWrite(V1, totalLiters);
@@ -141,7 +138,6 @@ historySaved = true;
 if (currentHour != 3 || currentMinute != 34) {
 historySaved = false;
 }
-// Tampilkan history terus-menerus di V2
 Blynk.virtualWrite(V2, lastHistory);
 }void setup() {
 Serial.begin(9600);
@@ -163,7 +159,7 @@ lcd.init();
 lcd.backlight();
 Blynk.virtualWrite(V0, 0);
 Blynk.virtualWrite(V1, 0);
-Blynk.virtualWrite(V2, lastHistory); // Tampilkan history awal
+Blynk.virtualWrite(V2, lastHistory); 
 }
 void loop() {
 Blynk.run();handleLED();
